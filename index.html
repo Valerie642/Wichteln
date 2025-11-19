@@ -318,16 +318,15 @@
       </div>
       <div class="actions">
         <button type="button" id="draw-button">
-        🎁 Auslosen
+          🎁 Auslosen
         </button>
         <button type="button" id="reset-button" class="secondary">
-        🔄 Alles zurücksetzen
+          🔄 Alles zurücksetzen
         </button>
         <button type="button" id="download-admin-file" class="secondary" style="background:#1f2937;color:white;">
-        📝 Notfallliste herunterladen
+          📝 Notfallliste herunterladen
         </button>
       </div>
-
       <div id="message-area"></div>
 
       <div class="results" id="results" style="display:none;">
@@ -339,11 +338,11 @@
         <div style="overflow-x:auto;">
           <table>
             <thead>
-              <tr>
-                <th>Person</th>
-                <th>Geheimer Link (Ziel verborgen)</th>
-                <th>Aktion</th>
-              </tr>
+            <tr>
+              <th>Person</th>
+              <th>Geheimer Link (Ziel verborgen)</th>
+              <th>Aktion</th>
+            </tr>
             </thead>
             <tbody id="results-body"></tbody>
           </table>
@@ -402,6 +401,10 @@
   const targetNameEl = document.getElementById('target-name');
   const shareWaBtn = document.getElementById('share-wa-btn');
   const backToAdminBtn = document.getElementById('back-to-admin-btn');
+  const downloadAdminFileBtn = document.getElementById('download-admin-file');
+
+  // speichert die letzte vollständige Zuordnung nur für den Admin
+  let lastAssignmentsAdmin = null;
 
   function createParticipantRow(name = '') {
     const row = document.createElement('div');
@@ -532,7 +535,7 @@
     return ok ? recipients : null;
   }
 
-  // Hilfsfunktionen fürs Encodieren im Link (Hash)
+  // Encodieren / Decodieren für Hash (Link)
   function encodePayload(obj) {
     const json = JSON.stringify(obj);
     return btoa(encodeURIComponent(json)); // robust für Umlaute
@@ -547,6 +550,7 @@
     clearMessages();
     resultsEl.style.display = 'none';
     resultsBodyEl.innerHTML = '';
+    lastAssignmentsAdmin = null;
 
     const rows = getParticipantRows();
     const names = rows.map(r => r._nameInput.value.trim());
@@ -577,13 +581,18 @@
       return;
     }
 
+    // Nur lokal für den Admin merken
+    lastAssignmentsAdmin = assignments.map((targetIdx, i) => ({
+      giver: participants[i].name,
+      target: participants[targetIdx].name
+    }));
+
     const baseUrl = window.location.href.split('#')[0].split('?')[0];
 
     assignments.forEach((targetIdx, i) => {
       const giver = participants[i].name;
       const receiver = participants[targetIdx].name;
 
-      // Nur im Code, nicht sichtbar: wer wen beschenkt
       const payload = { giver, target: receiver };
       const encoded = encodePayload(payload);
       const link = baseUrl + '#' + encoded;
@@ -634,6 +643,7 @@
     clearMessages();
     resultsEl.style.display = 'none';
     resultsBodyEl.innerHTML = '';
+    lastAssignmentsAdmin = null;
     addParticipantRow('Person 1');
     addParticipantRow('Person 2');
     addParticipantRow('Person 3');
@@ -650,6 +660,27 @@
   addParticipantBtn.addEventListener('click', () => addParticipantRow(''));
   drawButton.addEventListener('click', handleDraw);
   resetButton.addEventListener('click', handleReset);
+
+  // Admin-Notfall-Download
+  downloadAdminFileBtn.addEventListener('click', () => {
+    if (!lastAssignmentsAdmin) {
+      alert('Bitte zuerst auslosen.');
+      return;
+    }
+
+    let text = 'WICHTEL-AUSLOSUNG (' + new Date().toLocaleString() + ')\n\n';
+    lastAssignmentsAdmin.forEach(entry => {
+      text += `${entry.giver} → ${entry.target}\n`;
+    });
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'wichteln_auslosung.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
 
   function initParticipantViewFromPayload(payload) {
     const { giver, target } = payload || {};
@@ -710,4 +741,6 @@
 </script>
 </body>
 </html>
+
+
 
