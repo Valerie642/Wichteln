@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Weihnachts-Wichteln 🎄</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #fffbf2, #f3f6ff);
+      color: #222;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      padding: 16px;
+    }
+    .app {
+      max-width: 960px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border-radius: 18px;
+      padding: 20px 18px 22px;
+      box-sizing: border-box;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    header h1 span.emoji {
+      font-size: 1.6rem;
+    }
+    header small {
+      opacity: 0.7;
+      font-size: 0.8rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f9f3ff;
+      color: #6b21a8;
+      font-size: 0.75rem;
+      border: 1px solid #f0e0ff;
+    }
+
+    .section {
+      margin-bottom: 18px;
+    }
+
+    .card {
+      border-radius: 14px;
+      border: 1px solid #eee;
+      padding: 12px 14px;
+      background: #ffffff;
+    }
+
+    .card + .card {
+      margin-top: 10px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+    }
+
+    select {
+      width: 100%;
+      min-height: 70px;
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 0.85rem;
+      box-sizing: border-box;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 6px 14px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #065f46;
+      color: white;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+      box-shadow: none;
+    }
+
+    button.danger {
+      background: #b91c1c;
+      box-shadow: none;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .participants-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .participants-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .participant-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 1.1fr) minmax(170px, 1.4fr) auto;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .participant-row small {
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .results {
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th, td {
+      padding: 6px;
+      text-align: left;
+      border-bottom: 1px solid #f1f1f1;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    .small-note {
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .alert {
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 0.8rem;
+      margin-top: 6px;
+    }
+    .alert.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fee2e2;
+    }
+    .alert.success {
+      background: #ecfdf3;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+    .alert.info {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    .highlight {
+      font-weight: 600;
+      color: #065f46;
+    }
+
+    .participant-view {
+      text-align: center;
+      padding: 14px 4px 6px;
+    }
+    .participant-view h2 {
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+
+    .participant-view .who {
+      font-size: 1.1rem;
+      margin: 10px 0 6px;
+    }
+
+    .tagline {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 720px) {
+      .participant-row {
+        grid-template-columns: 1fr;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <header>
+    <div>
+      <h1><span class="emoji">🎄</span> Familien-Wichteln</h1>
+      <small>Geheime Wichtel-Auslosung mit anonymen Links.</small>
+    </div>
+    <div class="badge">
+      <span>⭐</span> läuft komplett im Browser
+    </div>
+  </header>
+
+  <!-- ADMIN-VIEW -->
+  <div id="admin-view" style="display:none;">
+    <div class="section card">
+      <div class="participants-header">
+        <div>
+          <strong>Teilnehmer:innen</strong>
+          <div class="small-note">Füge alle Personen hinzu, die beim Wichteln mitmachen.</div>
+        </div>
+        <button type="button" id="add-participant-btn">
+          ➕ Person hinzufügen
+        </button>
+      </div>
+
+      <div id="participants-list" class="participants-list"></div>
+
+      <div class="small-note">
+        Tipp: Für Paare kannst du später einstellen, dass sie sich nicht gegenseitig ziehen dürfen.
+      </div>
+    </div>
+
+    <div class="section card">
+      <strong>Regeln / Einschränkungen</strong>
+      <div class="small-note" style="margin-top:2px;">
+        Standard: Niemand zieht sich selbst. Zusätzlich kannst du festlegen, wer wen nicht ziehen darf
+        (z. B. Partner, gleiche Person wie letztes Jahr, etc.).
+      </div>
+      <div class="small-note" style="margin-top:4px;">
+        Wähle pro Person im Feld <span class="pill">Darf NICHT ziehen</span> alle Personen aus, die ausgeschlossen sind.
+        Mehrfachauswahl mit <strong>Strg/Cmd + Klick</strong>.
+      </div>
+    </div>
+
+    <div class="section card">
+      <strong>Auslosung</strong>
+      <div class="small-note" style="margin-top:2px;">
+        Klicke auf „Auslosen“, um eine zufällige, gültige Zuordnung zu erstellen.
+      </div>
+      <div class="actions">
+        <button type="button" id="draw-button">
+          🎁 Auslosen
+        </button>
+        <button type="button" id="reset-button" class="secondary">
+          🔄 Alles zurücksetzen
+        </button>
+      </div>
+      <div id="message-area"></div>
+
+      <div class="results" id="results" style="display:none;">
+        <hr style="border:none;border-top:1px dashed #e5e7eb;margin:10px 0;">
+        <div class="small-note" style="margin-bottom:6px;">
+          <strong>Individuelle Links:</strong> Sende den entsprechenden Link z. B. per WhatsApp an die Person.
+          <br>Im Link steht nur ein geheimer Code – nicht, wer gezogen wurde.
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Person</th>
+                <th>Geheimer Link (Ziel verborgen)</th>
+                <th>Aktion</th>
+              </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="small-note">
+      Hinweis: Die gesamte Logik läuft nur in deinem Browser. Wenn du selbst mitwichtelst,
+      siehst du nirgends, wen jemand gezogen hat – außer du öffnest selbst den Link einer Person.
+    </div>
+  </div>
+
+  <!-- PARTICIPANT-VIEW -->
+  <div id="participant-view" style="display:none;">
+    <div class="card participant-view">
+      <h2>Frohes Wichteln 🎅</h2>
+      <p class="tagline">Dein geheimer Wichtel wurde ausgelost!</p>
+      <p id="participant-name-line" class="small-note"></p>
+      <p class="who">
+        Du beschenkst dieses Jahr: <span class="highlight" id="target-name"></span>
+      </p>
+      <p class="small-note" style="margin-top:6px;">
+        (Nicht verraten – das bleibt unser kleines Geheimnis 🎁)
+      </p>
+
+      <div class="actions" style="justify-content:center;margin-top:10px;">
+        <button type="button" id="share-wa-btn">
+          📲 Per WhatsApp teilen
+        </button>
+        <button type="button" id="back-to-admin-btn" class="secondary">
+          🛠️ Admin-Ansicht
+        </button>
+      </div>
+
+      <div id="participant-hint" class="small-note" style="margin-top:10px;">
+        Tipp: Beim WhatsApp-Button kannst du dich selbst oder „Notizen“ auswählen, damit du es nicht vergisst.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const participantsListEl = document.getElementById('participants-list');
+  const addParticipantBtn = document.getElementById('add-participant-btn');
+  const drawButton = document.getElementById('draw-button');
+  const resetButton = document.getElementById('reset-button');
+  const messageArea = document.getElementById('message-area');
+  const resultsEl = document.getElementById('results');
+  const resultsBodyEl = document.getElementById('results-body');
+
+  const adminView = document.getElementById('admin-view');
+  const participantView = document.getElementById('participant-view');
+  const participantNameLine = document.getElementById('participant-name-line');
+  const targetNameEl = document.getElementById('target-name');
+  const shareWaBtn = document.getElementById('share-wa-btn');
+  const backToAdminBtn = document.getElementById('back-to-admin-btn');
+
+  function createParticipantRow(name = '') {
+    const row = document.createElement('div');
+    row.className = 'participant-row';
+
+    const nameCol = document.createElement('div');
+    const nameLabel = document.createElement('label');
+    nameLabel.textContent = 'Name';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'z. B. Anna';
+    nameInput.value = name;
+    nameCol.appendChild(nameLabel);
+    nameCol.appendChild(nameInput);
+
+    const forbidCol = document.createElement('div');
+    const forbidLabel = document.createElement('label');
+    forbidLabel.innerHTML = 'Darf NICHT ziehen <span class="pill">optional</span>';
+    const forbidSelect = document.createElement('select');
+    forbidSelect.multiple = true;
+    forbidCol.appendChild(forbidLabel);
+    forbidCol.appendChild(forbidSelect);
+
+    const actionsCol = document.createElement('div');
+    const rmBtn = document.createElement('button');
+    rmBtn.type = 'button';
+    rmBtn.className = 'danger';
+    rmBtn.textContent = '🗑️ Entfernen';
+    rmBtn.addEventListener('click', () => {
+      row.remove();
+      updateForbiddenOptions();
+    });
+    actionsCol.appendChild(rmBtn);
+
+    row.appendChild(nameCol);
+    row.appendChild(forbidCol);
+    row.appendChild(actionsCol);
+
+    row._nameInput = nameInput;
+    row._forbidSelect = forbidSelect;
+
+    return row;
+  }
+
+  function getParticipantRows() {
+    return Array.from(participantsListEl.querySelectorAll('.participant-row'));
+  }
+
+  function updateForbiddenOptions() {
+    const rows = getParticipantRows();
+    const names = rows.map(r => r._nameInput.value.trim()).map((n, idx) => n || 'Person ' + (idx+1));
+
+    rows.forEach((row, idx) => {
+      const select = row._forbidSelect;
+      const prevSelected = new Set(Array.from(select.selectedOptions).map(o => o.value));
+
+      select.innerHTML = '';
+      names.forEach((name, j) => {
+        if (j === idx) return;
+        const opt = document.createElement('option');
+        opt.value = String(j);
+        opt.textContent = name;
+        if (prevSelected.has(opt.value)) opt.selected = true;
+        select.appendChild(opt);
+      });
+    });
+  }
+
+  function clearMessages() {
+    messageArea.innerHTML = '';
+  }
+
+  function showMessage(type, text) {
+    const div = document.createElement('div');
+    div.className = 'alert ' + type;
+    div.textContent = text;
+    messageArea.appendChild(div);
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // Backtracking-Zuordnung mit Verboten
+  function generateAssignments(participants) {
+    const n = participants.length;
+    const indices = [...Array(n).keys()];
+    const recipients = new Array(n).fill(null);
+    const used = new Array(n).fill(false);
+
+    const order = indices.slice().sort((a, b) => {
+      const allowedA = indices.filter(j =>
+        j !== a &&
+        !participants[a].forbidden.has(j)
+      ).length;
+      const allowedB = indices.filter(j =>
+        j !== b &&
+        !participants[b].forbidden.has(j)
+      ).length;
+      return allowedA - allowedB;
+    });
+
+    function backtrack(pos) {
+      if (pos === n) return true;
+      const i = order[pos];
+      let candidates = indices.filter(j =>
+        !used[j] &&
+        j !== i &&
+        !participants[i].forbidden.has(j)
+      );
+      shuffle(candidates);
+
+      for (const j of candidates) {
+        recipients[i] = j;
+        used[j] = true;
+        if (backtrack(pos + 1)) return true;
+        recipients[i] = null;
+        used[j] = false;
+      }
+      return false;
+    }
+
+    const ok = backtrack(0);
+    return ok ? recipients : null;
+  }
+
+  // Hilfsfunktionen fürs Encodieren im Link (Hash)
+  function encodePayload(obj) {
+    const json = JSON.stringify(obj);
+    return btoa(encodeURIComponent(json)); // robust für Umlaute
+  }
+
+  function decodePayload(encoded) {
+    const json = decodeURIComponent(atob(encoded));
+    return JSON.parse(json);
+  }
+
+  function handleDraw() {
+    clearMessages();
+    resultsEl.style.display = 'none';
+    resultsBodyEl.innerHTML = '';
+
+    const rows = getParticipantRows();
+    const names = rows.map(r => r._nameInput.value.trim());
+
+    if (names.length < 2) {
+      showMessage('error', 'Es müssen mindestens 2 Personen teilnehmen.');
+      return;
+    }
+
+    for (let i = 0; i < names.length; i++) {
+      if (!names[i]) {
+        showMessage('error', 'Bitte gib für alle Personen einen Namen ein.');
+        return;
+      }
+    }
+
+    const participants = names.map((name, idx) => {
+      const forbidSelect = rows[idx]._forbidSelect;
+      const forbidden = new Set(Array.from(forbidSelect.selectedOptions).map(o => parseInt(o.value, 10)));
+      forbidden.add(idx); // niemand zieht sich selbst
+      return { name, forbidden };
+    });
+
+    const assignments = generateAssignments(participants);
+    if (!assignments) {
+      showMessage('error', 'Mit den aktuellen Einschränkungen ist keine gültige Auslosung möglich. ' +
+        'Lockere die Regeln (z. B. weniger „darf nicht ziehen“) und versuche es erneut.');
+      return;
+    }
+
+    const baseUrl = window.location.href.split('#')[0].split('?')[0];
+
+    assignments.forEach((targetIdx, i) => {
+      const giver = participants[i].name;
+      const receiver = participants[targetIdx].name;
+
+      // Nur im Code, nicht sichtbar: wer wen beschenkt
+      const payload = { giver, target: receiver };
+      const encoded = encodePayload(payload);
+      const link = baseUrl + '#' + encoded;
+
+      const tr = document.createElement('tr');
+
+      const tdGiver = document.createElement('td');
+      tdGiver.textContent = giver;
+      tr.appendChild(tdGiver);
+
+      const tdLink = document.createElement('td');
+      const linkInput = document.createElement('input');
+      linkInput.type = 'text';
+      linkInput.readOnly = true;
+      linkInput.value = link;
+      linkInput.style.fontSize = '0.75rem';
+      tdLink.appendChild(linkInput);
+      tr.appendChild(tdLink);
+
+      const tdAction = document.createElement('td');
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'secondary';
+      copyBtn.textContent = '🔗 Link kopieren';
+      copyBtn.addEventListener('click', () => {
+        linkInput.select();
+        linkInput.setSelectionRange(0, 99999);
+        try {
+          document.execCommand('copy');
+          showMessage('success', 'Link für „' + giver + '“ wurde in die Zwischenablage kopiert.');
+        } catch (e) {
+          showMessage('info', 'Konnte nicht automatisch kopieren. Markiere den Link und kopiere ihn manuell (Strg/Cmd + C).');
+        }
+      });
+      tdAction.appendChild(copyBtn);
+      tr.appendChild(tdAction);
+
+      resultsBodyEl.appendChild(tr);
+    });
+
+    resultsEl.style.display = 'block';
+    showMessage('success', 'Auslosung erfolgreich! Du kannst die Links nun per WhatsApp oder Messenger an die Familie schicken.');
+  }
+
+  function handleReset() {
+    if (!confirm('Willst du wirklich alle Eingaben löschen?')) return;
+    participantsListEl.innerHTML = '';
+    clearMessages();
+    resultsEl.style.display = 'none';
+    resultsBodyEl.innerHTML = '';
+    addParticipantRow('Person 1');
+    addParticipantRow('Person 2');
+    addParticipantRow('Person 3');
+    updateForbiddenOptions();
+  }
+
+  function addParticipantRow(name) {
+    const row = createParticipantRow(name);
+    participantsListEl.appendChild(row);
+    row._nameInput.addEventListener('input', updateForbiddenOptions);
+    updateForbiddenOptions();
+  }
+
+  addParticipantBtn.addEventListener('click', () => addParticipantRow(''));
+  drawButton.addEventListener('click', handleDraw);
+  resetButton.addEventListener('click', handleReset);
+
+  function initParticipantViewFromPayload(payload) {
+    const { giver, target } = payload || {};
+    adminView.style.display = 'none';
+    participantView.style.display = 'block';
+
+    const trimmedName = (giver || '').trim();
+    const trimmedTarget = (target || '').trim();
+
+    if (trimmedName) {
+      participantNameLine.textContent = 'Hallo ' + trimmedName + ' 👋';
+    } else {
+      participantNameLine.textContent = '';
+    }
+    targetNameEl.textContent = trimmedTarget || 'unbekannt 🤔';
+
+    shareWaBtn.onclick = () => {
+      const msgName = trimmedName || 'Hey';
+      const text = msgName + ', du beschenkst dieses Jahr: ' + trimmedTarget + ' 🎄🎁';
+      const url = 'https://wa.me/?text=' + encodeURIComponent(text);
+      window.open(url, '_blank');
+    };
+
+    backToAdminBtn.onclick = () => {
+      const baseUrl = window.location.href.split('#')[0].split('?')[0];
+      window.location.href = baseUrl;
+    };
+  }
+
+  function initAdminView() {
+    participantView.style.display = 'none';
+    adminView.style.display = 'block';
+    handleReset();
+  }
+
+  // Beim Laden prüfen, ob ein Hash-Code vorhanden ist
+  function initFromUrl() {
+    const hash = window.location.hash ? window.location.hash.slice(1) : '';
+    if (hash) {
+      try {
+        const payload = decodePayload(hash);
+        if (!payload || !payload.target) {
+          initAdminView();
+          return;
+        }
+        initParticipantViewFromPayload(payload);
+      } catch (e) {
+        console.error('Fehler beim Dekodieren des Links:', e);
+        initAdminView();
+      }
+    } else {
+      initAdminView();
+    }
+  }
+
+  initFromUrl();
+})();
+</script>
+</body>
+</html>
